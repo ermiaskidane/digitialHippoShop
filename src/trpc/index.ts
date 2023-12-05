@@ -1,14 +1,15 @@
 import { z } from 'zod'
-// import { authRouter } from './auth-router'
+import { authRouter } from './auth-router'
 import { publicProcedure, router } from './trpc'
 // import { QueryValidator } from '../lib/validators/query-validator'
 import { getPayloadClient } from '../get-payload'
 // import { paymentRouter } from './payment-router'
 
 export const appRouter = router({
-  anyApiRoute: publicProcedure.query(() => {
-    return "hello"
-  })
+  auth: authRouter,
+  // anyApiRoute: publicProcedure.query(() => {
+  //   return "hello"
+  // })
 })
 
 // export const appRouter = router({

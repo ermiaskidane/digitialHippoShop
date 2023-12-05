@@ -85,7 +85,7 @@ const start = async () => {
   // })
 
   // app.use('/cart', cartRouter)
-  // a middlware which link the trpc with server
+  // a middlware which link(forward) the trpc with server
   app.use(
     '/api/trpc',
     trpcExpress.createExpressMiddleware({
