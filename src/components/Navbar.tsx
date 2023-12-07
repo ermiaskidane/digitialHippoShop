@@ -4,15 +4,15 @@ import { Icons } from './Icons'
 import NavItems from './NavItems'
 import { buttonVariants } from './ui/button'
 import Cart from './Cart'
-// import { getServerSideUser } from '@/lib/payload-utils'
+import { getServerSideUser } from '@/lib/payload-utils'
 import { cookies } from 'next/headers'
-// import UserAccountNav from './UserAccountNav'
+import UserAccountNav from './UserAccountNav'
 // import MobileNav from './MobileNav'
 
 const Navbar = async () => {
-  // const nextCookies = cookies()
-  const user = null
-  // const { user } = await getServerSideUser(nextCookies)
+  const nextCookies = cookies()
+  // const user = null
+  const { user } = await getServerSideUser(nextCookies)
 
   return (
     <div className='bg-white sticky z-50 top-0 inset-x-0 h-16'>
@@ -52,8 +52,7 @@ const Navbar = async () => {
                   )}
 
                   {user ? (
-                    <></>
-                    // <UserAccountNav user={user} />
+                    <UserAccountNav user={user} />
                   ) : (
                     <Link
                       href='/sign-up'
