@@ -39,6 +39,7 @@ const ProductListing = ({
       typeof image === 'string' ? image : image.url
     )
     .filter(Boolean) as string[]
+    // .filter clear the null and undefine outcomes
 
   if (isVisible && product) {
     return (
