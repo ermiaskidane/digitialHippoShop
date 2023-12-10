@@ -14,15 +14,15 @@ import { formatPrice } from '@/lib/utils'
 import Link from 'next/link'
 import { buttonVariants } from './ui/button'
 import Image from 'next/image'
-// import { useCart } from '@/hooks/use-cart'
+import { useCart } from '@/hooks/use-cart'
 import { ScrollArea } from './ui/scroll-area'
-// import CartItem from './CartItem'
+import CartItem from './CartItem'
 import { useEffect, useState } from 'react'
 
 const Cart = () => {
-  // const { items } = useCart()
-  // const itemCount = items.length
-  const itemCount = 0
+  const { items } = useCart()
+  const itemCount = items.length
+  // const itemCount = 0
 
   const [isMounted, setIsMounted] = useState<boolean>(false)
 
@@ -30,10 +30,10 @@ const Cart = () => {
     setIsMounted(true)
   }, [])
 
-  // const cartTotal = items.reduce(
-  //   (total, { product }) => total + product.price,
-  //   0
-  // )
+  const cartTotal = items.reduce(
+    (total, { product }) => total + product.price,
+    0
+  )
 
   const fee = 1
 
@@ -55,14 +55,14 @@ const Cart = () => {
         {itemCount > 0 ? (
           <>
             <div className='flex w-full flex-col pr-6'>
-              {/* <ScrollArea>
+              <ScrollArea>
                 {items.map(({ product }) => (
                   <CartItem
                     product={product}
                     key={product.id}
                   />
                 ))}
-              </ScrollArea> */}
+              </ScrollArea>
             </div>
             <div className='space-y-4 pr-6'>
               <Separator />
@@ -80,7 +80,7 @@ const Cart = () => {
                 <div className='flex'>
                   <span className='flex-1'>Total</span>
                   <span>
-                    {/* {formatPrice(cartTotal + fee)} */}
+                    {formatPrice(cartTotal + fee)}
                   </span>
                 </div>
               </div>
