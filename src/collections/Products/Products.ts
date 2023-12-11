@@ -88,50 +88,51 @@ export const Products: CollectionConfig = {
     update: isAdminOrHasAccess(),
     delete: isAdminOrHasAccess(),
   },
-  // hooks: {
-  //   afterChange: [syncUser],
-  //   beforeChange: [
-  //     addUser,
-  //     async (args) => {
-  //       if (args.operation === 'create') {
-  //         const data = args.data as Product
+  hooks: {
+    afterChange: [syncUser],
+    // this creates the stripeId and priceId
+    beforeChange: [
+      addUser,
+      async (args) => {
+        if (args.operation === 'create') {
+          const data = args.data as Product
 
-  //         const createdProduct =
-  //           await stripe.products.create({
-  //             name: data.name,
-  //             default_price_data: {
-  //               currency: 'USD',
-  //               unit_amount: Math.round(data.price * 100),
-  //             },
-  //           })
+          const createdProduct =
+            await stripe.products.create({
+              name: data.name,
+              default_price_data: {
+                currency: 'USD',
+                unit_amount: Math.round(data.price * 100),
+              },
+            })
 
-  //         const updated: Product = {
-  //           ...data,
-  //           stripeId: createdProduct.id,
-  //           priceId: createdProduct.default_price as string,
-  //         }
+          const updated: Product = {
+            ...data,
+            stripeId: createdProduct.id,
+            priceId: createdProduct.default_price as string,
+          }
 
-  //         return updated
-  //       } else if (args.operation === 'update') {
-  //         const data = args.data as Product
+          return updated
+        } else if (args.operation === 'update') {
+          const data = args.data as Product
 
-  //         const updatedProduct =
-  //           await stripe.products.update(data.stripeId!, {
-  //             name: data.name,
-  //             default_price: data.priceId!,
-  //           })
+          const updatedProduct =
+            await stripe.products.update(data.stripeId!, {
+              name: data.name,
+              default_price: data.priceId!,
+            })
 
-  //         const updated: Product = {
-  //           ...data,
-  //           stripeId: updatedProduct.id,
-  //           priceId: updatedProduct.default_price as string,
-  //         }
+          const updated: Product = {
+            ...data,
+            stripeId: updatedProduct.id,
+            priceId: updatedProduct.default_price as string,
+          }
 
-  //         return updated
-  //       }
-  //     },
-  //   ],
-  // },
+          return updated
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'user',
