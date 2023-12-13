@@ -4,9 +4,9 @@ import { nextApp, nextHandler } from './next-utils'
 import * as trpcExpress from '@trpc/server/adapters/express'
 import { appRouter } from './trpc'
 import { inferAsyncReturnType } from '@trpc/server'
-// import bodyParser from 'body-parser'
-// import { IncomingMessage } from 'http'
-// import { stripeWebhookHandler } from './webhooks'
+import bodyParser from 'body-parser'
+import { IncomingMessage } from 'http'
+import { stripeWebhookHandler } from './webhooks'
 // import nextBuild from 'next/dist/build'
 // import path from 'path'
 // import { PayloadRequest } from 'payload/types'
@@ -27,22 +27,22 @@ export type ExpressContext = inferAsyncReturnType<
   typeof createContext
 >
 
-// export type WebhookRequest = IncomingMessage & {
-//   rawBody: Buffer
-// }
+export type WebhookRequest = IncomingMessage & {
+  rawBody: Buffer
+}
 
 const start = async () => {
-  // const webhookMiddleware = bodyParser.json({
-  //   verify: (req: WebhookRequest, _, buffer) => {
-  //     req.rawBody = buffer
-  //   },
-  // })
+  const webhookMiddleware = bodyParser.json({
+    verify: (req: WebhookRequest, _, buffer) => {
+      req.rawBody = buffer
+    },
+  })
 
-  // app.post(
-  //   '/api/webhooks/stripe',
-  //   webhookMiddleware,
-  //   stripeWebhookHandler
-  // )
+  app.post(
+    '/api/webhooks/stripe',
+    webhookMiddleware,
+    stripeWebhookHandler
+  )
 
   const payload = await getPayloadClient({
     initOptions: {
@@ -53,38 +53,41 @@ const start = async () => {
     },
   })
 
-  // if (process.env.NEXT_BUILD) {
-  //   app.listen(PORT, async () => {
-  //     payload.logger.info(
-  //       'Next.js is building for production'
-  //     )
+  // for production
+  if (process.env.NEXT_BUILD) {
+    app.listen(PORT, async () => {
+      payload.logger.info(
+        'Next.js is building for production'
+      )
 
-  //     // @ts-expect-error
-  //     await nextBuild(path.join(__dirname, '../'))
+      // @ts-expect-error
+      await nextBuild(path.join(__dirname, '../'))
 
-  //     process.exit()
-  //   })
+      process.exit()
+    })
 
-  //   return
-  // }
+    return
+  }
 
-  // const cartRouter = express.Router()
+  // user need to be login to access cart page
+  const cartRouter = express.Router()
 
-  // cartRouter.use(payload.authenticate)
+  cartRouter.use(payload.authenticate)
 
-  // cartRouter.get('/', (req, res) => {
-  //   const request = req as PayloadRequest
+  cartRouter.get('/', (req, res) => {
+    const request = req as PayloadRequest
 
-  //   if (!request.user)
-  //     return res.redirect('/sign-in?origin=cart')
+    if (!request.user)
+      return res.redirect('/sign-in?origin=cart')
 
-  //   const parsedUrl = parse(req.url, true)
-  //   const { query } = parsedUrl
+    const parsedUrl = parse(req.url, true)
+    const { query } = parsedUrl
 
-  //   return nextApp.render(req, res, '/cart', query)
-  // })
+    return nextApp.render(req, res, '/cart', query)
+  })
 
-  // app.use('/cart', cartRouter)
+  app.use('/cart', cartRouter)
+
   // a middlware which link(forward) the trpc with server
   app.use(
     '/api/trpc',
